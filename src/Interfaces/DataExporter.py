@@ -19,7 +19,7 @@ class DataExporter(ABC):
    @param
    data: decoded data format 
    @param
-   result_handler:
+   result_handler: called after the data export operation is completed.
    """
    @abstractmethod
    def export(self, data, result_handler):
