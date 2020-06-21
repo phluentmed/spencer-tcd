@@ -3,7 +3,8 @@ from abc import ABC, abstractmethod
 class DataExporter(ABC):
 
    """
-   Starts streaming data to a destination.
+   Starts streaming data to a destination. Returns 0 on success and a negative
+   error code on failure.
    """
    @abstractmethod
    def start(self):
