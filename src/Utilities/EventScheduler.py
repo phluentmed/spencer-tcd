@@ -1,4 +1,5 @@
 from enum import Enum
+import heapq
 import sched
 import sys
 # import time
@@ -13,32 +14,30 @@ class EventScheduler(sched.scheduler):
         STOPPED = 2
 
     def __init__(self):
-        super().__init__(self)
+        super().__init__()
         self._queue_status_lock = threading.RLock()
-        self._queue_status = QueueStatus.STOPPED
+        self._queue_status = self.QueueStatus.STOPPED
         self._csv_thread = threading.Thread(target=self.run, name="csv_thread")
 
-    def enterabs(self, time, priority, action, argument=(), kwargs=_sentinel):
+    def enterabs(self, time, priority, action, argument=(), kwargs={}):
         """Enter a new event in the queue at an absolute time.
         Returns an ID for the event which can be used to remove it,
         if necessary.
         """
         with self._queue_status_lock:
-            if self._queue_status != QueueStatus.STARTED:
-                # TODO: Raise an error here or have a status code with failure
-                # message.
-                return
-            return super().enterabs(time, priority, action, argument, kwargs)
+            if self._queue_status != self.QueueStatus.STARTED:
+                # TODO: Add error message
+                return None
+            super().enterabs(time, priority, action, argument, kwargs)
 
-    def enter(self, delay, priority, action, argument=(), kwargs=_sentinel):
+    def enter(self, delay, priority, action, argument=(), kwargs={}):
         """A variant that specifies the time as a relative time.
         This is actually the more commonly used interface.
         """
         with self._queue_status_lock:
-            if self._queue_status != QueueStatus.STARTED:
-                # TODO: Raise an error here or have a status code with failure
-                # message.
-                return
+            if self._queue_status != self.QueueStatus.STARTED:
+                # TODO: Add error message
+                return None
             return super().enter(delay, priority, action, argument, kwargs)
 
     def cancel(self, event):
@@ -47,16 +46,11 @@ class EventScheduler(sched.scheduler):
         If the event is not in the queue, this raises ValueError.
         """
         with self._queue_status_lock:
-            if self._queue_status != QueueStatus.STARTED:
-
-                # TODO: Raise an error here or have a status code with failure
-                # message.
-                return -1, "EventScheduler is not running."
+            if self._queue_status != self.QueueStatus.STARTED:
+                # TODO: Add error message
+                return -1
         super().cancel(event)
         return 0
-
-    def empty(self):
-        pass
 
     def run(self):
         # Taken from the python library and slightly modified for an
@@ -110,36 +104,23 @@ class EventScheduler(sched.scheduler):
 
     def start(self):
         with self._queue_status_lock:
-            if self._queue_status != QueueStatus.STOPPED:
-                # TODO: Raise an error here or have a status code with failure
-                # message.
-                return -1, "EventScheduler has already started or is stopping."
+            if self._queue_status != self.QueueStatus.STOPPED:
+                # TODO: Add error message
+                return -1
             self._csv_thread.start()
-            self._queue_status = QueueStatus.STARTED
+            self._queue_status = self.QueueStatus.STARTED
         return 0
 
     def stop(self):
         with self._queue_status_lock:
-            if self._queue_status != QueueStatus.STARTED:
-                # TODO: Raise an error here or have a status code with failure
-                # message
-                return -1, "EventScheduler is stopped or stopping."
-            self._queue_status = QueueStatus.STOPPING
-        self.enterabs(self.timefunc( )+ self.timefunc(), # TODO: Fix this
-                      sys.maxsize,                       # hackiness
-                      None)
+            if self._queue_status != self.QueueStatus.STARTED:
+                # TODO: Add error message
+                return -1
+            self._queue_status = self.QueueStatus.STOPPING
+            super().enterabs(sys.maxsize, sys.maxsize, None)
+            # TODO: Fix this hackiness
+
         with self._queue_status_lock:
             self._csv_thread.join()
-            self._queue_status = QueueStatus.STOPPED
+            self._queue_status = self.QueueStatus.STOPPED
         return 0
-
-    @property
-    def queue(self):
-        """An ordered list of upcoming events.
-        Events are named tuples with fields for:
-            time, priority, action, arguments, kwargs
-        """
-        # Use heapq to sort the queue rather than using 'sorted(self._queue)'.
-        # With heapq, two events scheduled at the same time will show in
-        # the actual order they would be retrieved.
-        pass
