@@ -2,21 +2,21 @@ from enum import Enum
 import heapq
 import sched
 import sys
-# import time
 import threading
 
 # Refer to sched.scheduler for a description of non-modified functions
+# https://github.com/python/cpython/blob/3.8/Lib/sched.py
 class EventScheduler(sched.scheduler):
 
-    class QueueStatus(Enum):
-        STARTED = 0
+    class SchedulerStatus(Enum):
+        RUNNING = 0
         STOPPING = 1
         STOPPED = 2
 
     def __init__(self):
         super().__init__()
-        self._queue_status_lock = threading.RLock()
-        self._queue_status = self.QueueStatus.STOPPED
+        self._scheduler_status_lock = threading.RLock()
+        self._scheduler_status = self.SchedulerStatus.STOPPED
         self._csv_thread = threading.Thread(target=self.run, name="csv_thread")
 
     def enterabs(self, time, priority, action, argument=(), kwargs={}):
@@ -24,8 +24,8 @@ class EventScheduler(sched.scheduler):
         Returns an ID for the event which can be used to remove it,
         if necessary.
         """
-        with self._queue_status_lock:
-            if self._queue_status != self.QueueStatus.STARTED:
+        with self._scheduler_status_lock:
+            if self._scheduler_status != self.SchedulerStatus.RUNNING:
                 # TODO: Add error message
                 return None
             super().enterabs(time, priority, action, argument, kwargs)
@@ -34,8 +34,8 @@ class EventScheduler(sched.scheduler):
         """A variant that specifies the time as a relative time.
         This is actually the more commonly used interface.
         """
-        with self._queue_status_lock:
-            if self._queue_status != self.QueueStatus.STARTED:
+        with self._scheduler_status_lock:
+            if self._scheduler_status != self.SchedulerStatus.RUNNING:
                 # TODO: Add error message
                 return None
             return super().enter(delay, priority, action, argument, kwargs)
@@ -45,8 +45,8 @@ class EventScheduler(sched.scheduler):
         This must be presented the ID as returned by enter().
         If the event is not in the queue, this raises ValueError.
         """
-        with self._queue_status_lock:
-            if self._queue_status != self.QueueStatus.STARTED:
+        with self._scheduler_status_lock:
+            if self._scheduler_status != self.SchedulerStatus.RUNNING:
                 # TODO: Add error message
                 return -1
         super().cancel(event)
@@ -65,7 +65,7 @@ class EventScheduler(sched.scheduler):
         otherwise, the event is removed from the queue and executed
         (its action function is called, passing it the argument).  If
         the delay function returns prematurely, it is simply
-        restarted.
+        r.RUNNING.
         It is legal for both the delay function and the action
         function to modify the queue or to raise an exception;
         exceptions are not caught but the scheduler's state remains
@@ -103,24 +103,24 @@ class EventScheduler(sched.scheduler):
                 delayfunc(0)   # Let other threads run
 
     def start(self):
-        with self._queue_status_lock:
-            if self._queue_status != self.QueueStatus.STOPPED:
+        with self._scheduler_status_lock:
+            if self._scheduler_status != self.SchedulerStatus.STOPPED:
                 # TODO: Add error message
                 return -1
             self._csv_thread.start()
-            self._queue_status = self.QueueStatus.STARTED
+            self._scheduler_status = self.SchedulerStatus.RUNNING
         return 0
 
     def stop(self):
-        with self._queue_status_lock:
-            if self._queue_status != self.QueueStatus.STARTED:
+        with self._scheduler_status_lock:
+            if self._scheduler_status != self.SchedulerStatus.RUNNING:
                 # TODO: Add error message
                 return -1
-            self._queue_status = self.QueueStatus.STOPPING
+            self._scheduler_status = self.SchedulerStatus.STOPPING
             super().enterabs(sys.maxsize, sys.maxsize, None)
             # TODO: Fix this hackiness
 
-        with self._queue_status_lock:
+        with self._scheduler_status_lock:
             self._csv_thread.join()
-            self._queue_status = self.QueueStatus.STOPPED
+            self._scheduler_status = self.SchedulerStatus.STOPPED
         return 0

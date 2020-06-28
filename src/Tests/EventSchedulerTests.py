@@ -1,13 +1,13 @@
 from Utilities.EventScheduler import EventScheduler
-import time
 import unittest
+import time
 
 
 def insert_into_list(item, list_object):
     list_object.append(item)
 
 
-class MyTestCase(unittest.TestCase):
+class EventSchedulerTests(unittest.TestCase):
 
     def test_breathing(self):
         event_scheduler = EventScheduler()
@@ -28,6 +28,15 @@ class MyTestCase(unittest.TestCase):
         event_scheduler.enter(0, 0, insert_into_list, ('A', result_list))
         time.sleep(1)
         self.assertFalse(result_list)
+
+    def test_no_double_start_or_stop(self):
+        event_scheduler = EventScheduler()
+        event_scheduler.start()
+        result = event_scheduler.start()
+        self.assertEqual(result, -1)
+        event_scheduler.stop()
+        result = event_scheduler.stop()
+        self.assertEqual(result, -1)
 
     def test_execute_one_event(self):
         event_scheduler = EventScheduler()
