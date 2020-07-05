@@ -13,11 +13,11 @@ class EventScheduler(sched.scheduler):
         STOPPING = 1
         STOPPED = 2
 
-    def __init__(self):
+    def __init__(self, thread_name):
         super().__init__()
         self._scheduler_status_lock = threading.RLock()
         self._scheduler_status = self.SchedulerStatus.STOPPED
-        self._csv_thread = threading.Thread(target=self.run, name="csv_thread")
+        self._event_thread = threading.Thread(target=self.run, name=thread_name)
 
     def enterabs(self, time, priority, action, argument=(), kwargs={}):
         """Enter a new event in the queue at an absolute time.
@@ -107,7 +107,7 @@ class EventScheduler(sched.scheduler):
             if self._scheduler_status != self.SchedulerStatus.STOPPED:
                 # TODO: Add error message
                 return -1
-            self._csv_thread.start()
+            self._event_thread.start()
             self._scheduler_status = self.SchedulerStatus.RUNNING
         return 0
 
@@ -121,6 +121,6 @@ class EventScheduler(sched.scheduler):
             # TODO: Fix this hackiness
 
         with self._scheduler_status_lock:
-            self._csv_thread.join()
+            self._event_thread.join()
             self._scheduler_status = self.SchedulerStatus.STOPPED
         return 0

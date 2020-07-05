@@ -7,7 +7,7 @@ class CSVExporter(DataExporter):
 
     def __init__(self, filepath, max_buffer_size=10):
         self._filepath = filepath
-        self._event_scheduler = EventScheduler()
+        self._event_scheduler = EventScheduler("csv_thread")
         self._max_buffer_size = max_buffer_size
         self._data_buffer = []
         self._is_running = False

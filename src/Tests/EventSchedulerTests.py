@@ -6,11 +6,12 @@ import time
 def insert_into_list(item, list_object):
     list_object.append(item)
 
+thread_name = "test_thread"
 
 class EventSchedulerTests(unittest.TestCase):
 
     def test_breathing(self):
-        event_scheduler = EventScheduler()
+        event_scheduler = EventScheduler(thread_name)
         result = event_scheduler.start()
         self.assertEqual(result, 0)
         time.sleep(1)
@@ -18,7 +19,7 @@ class EventSchedulerTests(unittest.TestCase):
         self.assertEqual(result, 0)
 
     def test_event_scheduler_stopped(self):
-        event_scheduler = EventScheduler()
+        event_scheduler = EventScheduler(thread_name)
         result_list = []
         event_scheduler.enter(0, 0, insert_into_list, ('A', result_list))
         time.sleep(1)
@@ -30,7 +31,7 @@ class EventSchedulerTests(unittest.TestCase):
         self.assertFalse(result_list)
 
     def test_no_double_start_or_stop(self):
-        event_scheduler = EventScheduler()
+        event_scheduler = EventScheduler(thread_name)
         event_scheduler.start()
         result = event_scheduler.start()
         self.assertEqual(result, -1)
@@ -39,7 +40,7 @@ class EventSchedulerTests(unittest.TestCase):
         self.assertEqual(result, -1)
 
     def test_execute_one_event(self):
-        event_scheduler = EventScheduler()
+        event_scheduler = EventScheduler(thread_name)
         event_scheduler.start()
         result_list = []
         event_scheduler.enter(0, 0, insert_into_list, ('A', result_list))
@@ -48,7 +49,7 @@ class EventSchedulerTests(unittest.TestCase):
         self.assertEqual(result_list[0], 'A')
 
     def test_relative_delay(self):
-        event_scheduler = EventScheduler()
+        event_scheduler = EventScheduler(thread_name)
         event_scheduler.start()
         result_list = []
         event_scheduler.enter(3, 0, insert_into_list, ('A', result_list))
@@ -61,7 +62,7 @@ class EventSchedulerTests(unittest.TestCase):
 
     # TODO: Make test less flakey (failure depends on speed of execution)
     def test_priority(self):
-        event_scheduler = EventScheduler()
+        event_scheduler = EventScheduler(thread_name)
         event_scheduler.start()
         result_list = []
         event_scheduler.enterabs(3, 4, insert_into_list, ('C', result_list))
