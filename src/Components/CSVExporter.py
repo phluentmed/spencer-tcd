@@ -14,6 +14,10 @@ class CSVExporter(DataExporter):
 
     @property
     def is_running(self):
+        """Starts streaming data to the csv file. Returns 0 on success and a
+            negative
+            error code on failure.
+        """
         return self._is_running
 
     """
