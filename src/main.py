@@ -11,6 +11,7 @@ parser.add_argument('-o', '--outfile')
 parser.add_argument('-w', '--web_out')
 parser.add_argument('-p', '--port', default='/dev/ttyUSB0')
 
+
 args = parser.parse_args()
 
 if args.outfile == None and args.web_out == None:
