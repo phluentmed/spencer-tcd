@@ -15,3 +15,4 @@ print(args.web_out)
 if args.outfile == None and args.web_out == None:
     print('specify at least one output destination')
     exit()
+
