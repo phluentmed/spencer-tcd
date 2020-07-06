@@ -14,7 +14,6 @@ class HTTPExporter(DataExporter):
 
 	def start(self):
 		#TODO: have some retry logic on connect
-		socket.connect(self._host_name)
 		if not self._is_running:
 			self._is_running = True
 			return self_even_scheduler.start()
