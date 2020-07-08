@@ -74,6 +74,8 @@ class CSVExporter(DataExporter):
             return
 
     # Executed from the Event Scheduler thread
+    # TODO: Check to see if directory exists to propagate useful message to the
+    #  logs
     def _write_to_csv(self):
         with open(self._filepath, 'a') as csvfile:
             writer = csv.DictWriter(csvfile,
