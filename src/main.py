@@ -26,7 +26,7 @@ arg_port = args.port
 
 ### functions to start and stop controller ###
 
-def start_controller(self, arg_baud, arg_outfile, arg_web_out, arg_port):
+def start_controller(arg_baud, arg_outfile, arg_web_out, arg_port):
     main_controller = Controller(arg_baud, arg_outfile, arg_web_out, arg_port)
     main_controller.start()
 

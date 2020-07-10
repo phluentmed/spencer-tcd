@@ -1,6 +1,6 @@
 import json
 import requests
-from multiprocessing import Process
+import threading
 
 from Components.SerialConnection import SerialConnection
 from Components.PacketDecoder import PacketDecoder
@@ -16,6 +16,18 @@ class Controller():
 		self._web_out = web_out
 		self._is_running = False
 
+		self._data_handler_thread = \
+		threading.Thread(target=data_handler(self.handler_callback, \
+		self.exporter_lst))
+
+		self.exporter_lst = []
+		self._is_running_lock = threading.Lock()
+
+
+	@property	
+	def handler_callback(callback_code):
+		print('Function callback code: ' + callback_code)
+
 	@property
 	def is_running(self):
 		return self._is_running
@@ -23,19 +35,22 @@ class Controller():
 	def start(self):
 		if not self.is_running:
 			self._is_running = True
-			return self.start() ## fix
+			return self._data_handler.start()
 		return -1
 
 	def stop(self):
-		if self.is_running:
-			self._is_running = False
-			rc = self.stop() ## fix
-			if (rc != 0):
+		with self._is_running_lock:
+			if self.is_running:
+				self._is_running = False
+				for exporter in exporter_lst:
+					exporter.stop()
+				rc = self._data_handler_thread.stop()
+				if (rc != 0):
+					return rc
 				return rc
-			self.stop() ## fix
-			return rc
+
 	
-	def data_handler(self, handler_callback):
+	def data_handler(self, handler_callback, exporter_lst):
 
 		### establish connection ###
 		serial_connection = SerialConnection(self.port)
@@ -43,14 +58,13 @@ class Controller():
 		packet_decoder = PacketDecoder.getInstance()
 
 		# make list of exporters
-		exporter_lst = []
-			if self._out_file != None:
-				exporter_lst.append(CSVExporter)
-			if self._web_out != None:
-				exporter_lst.append(HttpExporter)
+		if self._out_file != None:
+			self.exporter_lst.append(CSVExporter(self._out_file))
+		if self._web_out != None:
+			self.exporter_lst.append(HttpExporter(self._web_out))
 
 
-		while True:
+		while self._is_running:
 			header, data = serial_connection.receive()
 			(PS, PL, DID, VER, PN, CH, PT) = header
 			if not data and not header:
@@ -65,7 +79,9 @@ class Controller():
 				print(num_packet)
 
 				for exporter in exporter_lst:
-					exporter.export() ## export to each available destination
+					## export to each available destination
+					exporter.export(num_packet, \
+					handler_callback(callback_code)) 
 
 			# messages packet
 			elif (PT == 3):
@@ -76,24 +92,3 @@ class Controller():
 			elif (PT == 4):
 				print("error packet")
 				print(packet_decoder.decode(header, data))
-
-			
-
-	def tcd_network_post(payload, dest_ip): ## idk if we still need this fn here?
-		print("called tcd_network_post")
-		payload = {'TCDMonitor': payload}
-		print(payload)
-		r = requests.put(dest_ip, data=json.dumps(payload))
-		print(r.text)
-
-	### I know we're supposed to do some error stuff here. but i don't get why/how
-	# my understanding a callback function is that it just runs at the 
-	# end of the function it was passed into
-	###
-	def handler_callback():
-		print('data handler completed')
-
-
-	### run data_handler in its own process ### 
-	data_listen = Process(target=data_handler)
-
