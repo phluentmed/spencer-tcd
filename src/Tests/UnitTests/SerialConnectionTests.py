@@ -22,8 +22,9 @@ class TestChecksums(unittest.TestCase):
     # 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 99]
 
     def test_checksum_correct(self):
-        self.assertTrue(SerialConnection.isChecksumValid(self.correct_packet))
+        self.assertTrue(
+            SerialConnection.is_checksum_valid(self.correct_packet))
 
     def test_checksum_incorrect(self):
         self.assertFalse(
-            SerialConnection.isChecksumValid(self.incorrect_packet))
+            SerialConnection.is_checksum_valid(self.incorrect_packet))
