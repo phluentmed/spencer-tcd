@@ -1,6 +1,7 @@
 from collections import deque
 from Components.SerialConnection import SerialConnection
 import struct
+import threading
 
 
 class MockSerialConnection(SerialConnection):
@@ -17,6 +18,7 @@ class MockSerialConnection(SerialConnection):
         self._serial_connect_fail = serial_connect_fail
         self._checksum_fail = check_sum_fail
         self._fake_data = deque()
+        self._fake_data_lock = threading.RLock()
 
     def is_connected(self):
         return self._is_open
@@ -38,9 +40,11 @@ class MockSerialConnection(SerialConnection):
     def receive(self):
         if not self.is_connected():
             raise RuntimeError("Serial connection not started!")
+        data = object
         while not self._fake_data:
             continue
-        data = self._fake_data.popleft()
+        with self._fake_data_lock:
+            data = self._fake_data.popleft()
         (PS, PL, DID, VER, PN, CH,
          PT) = MockSerialConnection._header_unpacker.unpack(data[0:8])
         if PS != 0xA5C3:
@@ -54,4 +58,5 @@ class MockSerialConnection(SerialConnection):
             return (0, 0, 0, 0, 0, 0, 0), []
 
     def load_fake_data(self, data):
-        self._fake_data.appendleft(data)
+        with self._fake_data_lock:
+            self._fake_data.appendleft(data)
