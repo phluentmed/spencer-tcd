@@ -4,7 +4,7 @@ import threading
 
 from Components.PacketDecoder import PacketDecoder
 from Components.CSVExporter import CSVExporter
-from Components.HttpExporter import HttpExporter
+# from Components.HttpExporter import HttpExporter
 
 class Controller():
 
@@ -15,17 +15,18 @@ class Controller():
 		self._web_out = web_out
 		self._is_running = False
 
-		self._data_handler_thread = \
-		threading.Thread(target=data_handler(self.handler_callback, \
-		self.exporter_lst))
+		self._exporter_lst = []
 
-		self.exporter_lst = []
+		self._data_handler_thread = \
+		threading.Thread(target=self._data_handler(self.handler_callback))
+
+		
 		self._is_running_lock = threading.Lock()
 
 
 	@property
 	def handler_callback(callback_code):
-		print('Function callback code: ' + callback_code)
+		print('Function callback code: ' + str(callback_code))
 
 	@property
 	def is_running(self):
@@ -41,7 +42,7 @@ class Controller():
 		with self._is_running_lock:
 			if self.is_running:
 				self._is_running = False
-				for exporter in exporter_lst:
+				for exporter in self._exporter_lst:
 					exporter.stop()
 				rc = self._data_handler_thread.stop()
 				if (rc != 0):
@@ -49,17 +50,17 @@ class Controller():
 				return rc
 
 
-	def data_handler(self, handler_callback, exporter_lst):
+	def _data_handler(self, handler_callback):
 
 		### establish connection ###
 		print('Result of serial connect: %r' % self._serial_connection.connect())
 		packet_decoder = PacketDecoder.getInstance()
 
 		# make list of exporters
-		if self._out_file != None:
-			self.exporter_lst.append(CSVExporter(self._out_file))
-		if self._web_out != None:
-			self.exporter_lst.append(HttpExporter(self._web_out))
+		if self._out_file:
+			self._exporter_lst.append(CSVExporter(self._out_file))
+		if self._web_out:
+			self._exporter_lst.append(HttpExporter(self._web_out))
 
 
 		while self._is_running:
@@ -79,7 +80,7 @@ class Controller():
 				for exporter in exporter_lst:
 					## export to each available destination
 					exporter.export(num_packet, \
-					handler_callback(callback_code))
+					handler_callback)
 
 			# messages packet
 			elif (PT == 3):

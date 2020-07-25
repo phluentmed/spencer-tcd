@@ -4,6 +4,8 @@ import csv
 import time
 import timeout_decorator
 import unittest
+import os
+import shutil
 
 test_dir = 'TestArtifacts'
 test_file = test_dir + '/' + 'test_file.csv'
