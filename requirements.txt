@@ -1,5 +1,10 @@
+certifi==2020.6.20
+chardet==3.0.4
 future==0.18.2
+idna==2.10
 iso8601==0.1.12
 PyYAML==5.3.1
+requests==2.24.0
 serial==0.0.97
 timeout-decorator==0.4.1
+urllib3==1.25.10
