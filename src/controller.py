@@ -1,5 +1,3 @@
-import json
-import requests
 import threading
 
 from Components.PacketDecoder import PacketDecoder
@@ -35,19 +33,15 @@ class Controller():
 	def start(self):
 		if not self.is_running:
 			self._is_running = True
-			return self._data_handler.start()
-		return -1
+			self._data_handler_thread.start()
+			self._data_handler_thread.join(timeout=2)
+		return 0
 
 	def stop(self):
 		with self._is_running_lock:
-			if self.is_running:
-				self._is_running = False
-				for exporter in self._exporter_lst:
-					exporter.stop()
-				rc = self._data_handler_thread.stop()
-				if (rc != 0):
-					return rc
-				return rc
+			self._data_handler_thread.join()
+			self._is_running = False
+		return 0
 
 
 	def _data_handler(self, handler_callback):
@@ -64,7 +58,9 @@ class Controller():
 
 
 		while self._is_running:
+			#blocking call bypass with timeout in start fn
 			header, data = serial_connection.receive()
+
 			(PS, PL, DID, VER, PN, CH, PT) = header
 			if not data and not header:
 				print('error in transmission')
