@@ -22,14 +22,17 @@ arg_web_out = args.web_out
 arg_port = args.port
 
 main_controller = Controller(SerialConnection,
-                                 arg_outfile,
-                                 arg_web_out,
-                                 arg_port)
+                             arg_port,
+                             arg_outfile,
+                             args.outfile,
+                             arg_web_out)
 
 ### functions to start and stop controller ###
 
-def start_controller(arg_port, arg_outfile, arg_web_out, main_controller):
+
+def start_controller(main_controller):
     main_controller.start()
+
 
 def stop_controller(signal, frame, main_controller):
     print('Ctrl-C detected. Stopping script')
@@ -44,10 +47,10 @@ signal.signal(signal.SIGINT, stop_controller(signal, frame, main_controller))
 
 ### start the controller ###
 
-start_controller(arg_baud, arg_outfile, arg_web_out, arg_port, main_controller)
+start_controller(main_controller)
 
 
 ### run forever ###
 
 while True:
-    pass
+    continue

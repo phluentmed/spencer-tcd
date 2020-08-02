@@ -1,5 +1,4 @@
 import threading
-
 from Components.PacketDecoder import PacketDecoder
 from Components.CSVExporter import CSVExporter
 # from Components.HttpExporter import HttpExporter
@@ -42,7 +41,7 @@ class Controller():
 	def _data_handler(self, handler_callback):
 
 		### establish connection ###
-		print('Result of serial connect: %r' % self._serial_connection.connect())
+		print('TCD Connection Status: %r' % self._serial_connection.connect())
 		packet_decoder = PacketDecoder.getInstance()
 
 		# make list of exporters
@@ -65,10 +64,7 @@ class Controller():
 
 			# numerics packet sent once a second
 			elif (PT == 2):
-				# print('numerics packet')
 				num_packet = packet_decoder.decode(header, data)
-				# print(num_packet)
-
 				for exporter in self._exporter_lst:
 					## export to each available destination
 					exporter.export(num_packet, \
