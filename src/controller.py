@@ -12,18 +12,12 @@ class Controller():
 		self._out_file = out_file
 		self._web_out = web_out
 		self._is_running = False
-
 		self._exporter_lst = []
-
 		self._data_handler_thread = \
-		threading.Thread(target=self._data_handler(self.handler_callback))
+		threading.Thread(target=self._data_handler, \
+		args=[self.handler_callback])
 
-		
-		self._is_running_lock = threading.Lock()
-
-
-	@property
-	def handler_callback(callback_code):
+	def handler_callback(self, callback_code):
 		print('Function callback code: ' + str(callback_code))
 
 	@property
@@ -34,13 +28,14 @@ class Controller():
 		if not self.is_running:
 			self._is_running = True
 			self._data_handler_thread.start()
-			self._data_handler_thread.join(timeout=2)
 		return 0
 
 	def stop(self):
-		with self._is_running_lock:
-			self._data_handler_thread.join()
-			self._is_running = False
+		for exporter in self._exporter_lst:
+			exporter.stop()
+		self._is_running = False
+		self._serial_connection.cancel_read()
+		self._data_handler_thread.join()
 		return 0
 
 
@@ -56,10 +51,11 @@ class Controller():
 		if self._web_out:
 			self._exporter_lst.append(HttpExporter(self._web_out))
 
+		for exporter in self._exporter_lst:
+			exporter.start()
 
 		while self._is_running:
-			#blocking call bypass with timeout in start fn
-			header, data = serial_connection.receive()
+			header, data = self._serial_connection.receive()
 
 			(PS, PL, DID, VER, PN, CH, PT) = header
 			if not data and not header:
@@ -69,11 +65,11 @@ class Controller():
 
 			# numerics packet sent once a second
 			elif (PT == 2):
-				print('numerics packet')
+				# print('numerics packet')
 				num_packet = packet_decoder.decode(header, data)
-				print(num_packet)
+				# print(num_packet)
 
-				for exporter in exporter_lst:
+				for exporter in self._exporter_lst:
 					## export to each available destination
 					exporter.export(num_packet, \
 					handler_callback)

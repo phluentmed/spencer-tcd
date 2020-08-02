@@ -19,6 +19,7 @@ class MockSerialConnection(SerialConnection):
         self._checksum_fail = check_sum_fail
         self._fake_data = deque()
         self._fake_data_lock = threading.RLock()
+        self._cancel_read = False
 
     def is_connected(self):
         return self._is_open
@@ -42,7 +43,8 @@ class MockSerialConnection(SerialConnection):
             raise RuntimeError("Serial connection not started!")
         data = object
         while not self._fake_data:
-            continue
+            if self._cancel_read:
+                return (0, 0, 0, 0, 0, 0, 0), []
         with self._fake_data_lock:
             data = self._fake_data.popleft()
         (PS, PL, DID, VER, PN, CH,
@@ -60,3 +62,6 @@ class MockSerialConnection(SerialConnection):
     def load_fake_data(self, data):
         with self._fake_data_lock:
             self._fake_data.appendleft(data)
+
+    def cancel_read(self):
+        self._cancel_read = True

@@ -30,6 +30,8 @@ class SerialConnection:
 
     def receive(self):
         header = self._serial_port.read(self._HEADER_SIZE)
+        if len(header) < self._HEADER_SIZE:
+            return (0, 0, 0, 0, 0, 0, 0), []
         (PS, PL, DID, VER, PN, CH,
          PT) = SerialConnection._header_unpacker.unpack(header)
         if PS != 0xA5C3:
@@ -47,3 +49,6 @@ class SerialConnection:
             print(PT)
             self._serial_port.reset_input_buffer()
             return (0, 0, 0, 0, 0, 0, 0), []
+
+    def cancel_read(self):
+        self._serial_port.cancel_read()
