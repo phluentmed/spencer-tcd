@@ -1,6 +1,7 @@
 from Interfaces.DataExporter import DataExporter
 from Utilities.EventScheduler import EventScheduler
 
+import logging
 import json
 import requests
 
@@ -16,7 +17,7 @@ class HTTPExporter(DataExporter):
 		if not self._is_running:
 			self._is_running = True
 			return self._event_scheduler.start()
-		#TODO add some message of failure saying already running or failed
+		logging.warning("HTTPExporter is already running")
 		return -1
 
 	def stop(self):
@@ -25,6 +26,7 @@ class HTTPExporter(DataExporter):
 			return_code = self._event_scheduler.stop()
 			self._export_dispatched(None, True)
 			return return_code
+		logging.warning("HTTPExporter has already been stopped")
 		return -1
 
 	def export(self, data, result_handler):
@@ -33,7 +35,8 @@ class HTTPExporter(DataExporter):
 										1,
 										self._export_dispatched,
 										(data, result_handler))
-		#TODO add helpful message for feedback
+			return 0
+		logging.info("HTTPExporter has not been started")
 		return -1
 
 	def _export_dispatched(self, data, result_handler):
@@ -42,7 +45,6 @@ class HTTPExporter(DataExporter):
 			response = requests.put(self._host_address,
 									data=json.dumps(data))
 			if response.status_code != 200:
-				print("Error sending data to " + self._host_address +
-					  " with error code" + response.status_code)
-				raise Exception('Failed to export')
+				logging.error("Error sending data to " + self._host_address +
+					  " with http error code: " + response.status_code)
 			return response.status_code
