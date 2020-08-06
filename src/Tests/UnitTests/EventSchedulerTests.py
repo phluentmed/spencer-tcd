@@ -65,9 +65,9 @@ class EventSchedulerTests(unittest.TestCase):
         event_scheduler = EventScheduler(thread_name)
         event_scheduler.start()
         result_list = []
-        event_scheduler.enterabs(3, 4, insert_into_list, ('C', result_list))
+        event_scheduler.enterabs(3, 5, insert_into_list, ('C', result_list))
         event_scheduler.enterabs(3, 2, insert_into_list, ('B', result_list))
-        event_scheduler.enterabs(3, 5, insert_into_list, ('D', result_list))
+        event_scheduler.enterabs(3, 6, insert_into_list, ('D', result_list))
         event_scheduler.enterabs(3, 1, insert_into_list, ('A', result_list))
         event_scheduler.stop()
         self.assertListEqual(result_list, ['A', 'B', 'C', 'D'])

@@ -3,7 +3,7 @@ from Utilities.EventScheduler import EventScheduler
 
 import logging
 import json
-#import requests
+
 
 class HTTPExporter(DataExporter):
 
@@ -16,17 +16,18 @@ class HTTPExporter(DataExporter):
 	def start(self):
 		#TODO: have some retry logic on connect
 		if not self._is_running:
-			self._is_running = True
-			return self._event_scheduler.start()
-		logging.warning("HTTPExporter is already running")
+			rc = self._event_scheduler.start()
+			if rc == 0:
+				self._is_running = True
+			return rc
 		return -1
 
 	def stop(self):
 		if self._is_running:
-			self._is_running = False
-			return_code = self._event_scheduler.stop()
-			return return_code
-		logging.warning("HTTPExporter has already been stopped")
+			rc = self._event_scheduler.stop()
+			if rc == 0:
+				self._is_running = False
+			return rc
 		return -1
 
 	def export(self, data, result_handler):
@@ -36,11 +37,10 @@ class HTTPExporter(DataExporter):
 										self._export_dispatched,
 										(data, result_handler))
 			return 0
-		logging.info("HTTPExporter has not been started")
 		return -1
 
 	def _export_dispatched(self, data, result_handler):
-		#TODO add negling
+		#TODO: add naggling
 		if data:
 			response = self._requests.put(self._host_address,
 									data=json.dumps(data))
