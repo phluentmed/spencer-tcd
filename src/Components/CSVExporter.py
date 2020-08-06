@@ -27,7 +27,10 @@ class CSVExporter(DataExporter):
     def start(self):
         if not self.is_running:
             self._is_running = True
-            return self._event_scheduler.start()
+            rc = self._event_scheduler.start()
+            if rc == 0:
+                self._is_running = True
+            return rc
         return -1
 
     """
@@ -35,11 +38,11 @@ class CSVExporter(DataExporter):
     """
     def stop(self):
         if self.is_running:
-            self._is_running = False
             rc = self._event_scheduler.stop()
-            if (rc != 0):
+            if rc != 0:
                 return rc
             self._export_dispatched(None, None, True)
+            self._is_running = False
             return rc
         return -1
 

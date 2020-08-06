@@ -17,8 +17,8 @@ class SerialConnection:
     def connect(self):
         if self.is_connected():
             return True
-        self._serial_port.open();
-        return self.is_connected()
+        self._serial_port.open()
+        return self.isConnected
 
     @staticmethod
     def is_checksum_valid(remaining_bytes):

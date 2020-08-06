@@ -1,5 +1,6 @@
 import struct
 
+
 class PacketDecoder:
     _numeric_packet_unpacker = struct.Struct('q H 9s 3B 2H 3h H 2h')
     _event_packet_unpacker = None
@@ -35,7 +36,7 @@ class PacketDecoder:
     def buildNumericObject(self, header, data):
         (PS, PL, DID, VER, PN, CH, PT) = header
 
-        (timeStamp, SR, vessel, depth, power, sample, flags, emboliCount, \
+        (timeStamp, SR, vessel, depth, power, sample, flags, emboliCount,
          peakV, diasV, meanV, emboliRate, x,
          x) = self._numeric_packet_unpacker.unpack(data)
 

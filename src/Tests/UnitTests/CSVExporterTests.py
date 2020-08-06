@@ -6,6 +6,7 @@ import shutil
 import string
 import unittest
 
+
 def generateDictionaryData():
     numbers = string.digits
     letters = string.ascii_uppercase
@@ -14,8 +15,10 @@ def generateDictionaryData():
             'hex': ''.join(random.choice(hexdigits) for i in range(10)),
             'letters': ''.join(random.choice(letters) for i in range(10))}
 
+
 def result_handler(*args):
     pass
+
 
 test_dir = 'TestArtifacts'
 test_file = test_dir + '/' + 'test_file.csv'
@@ -69,7 +72,7 @@ class CSVExporterTests(unittest.TestCase):
         csv_exporter = CSVExporter(test_file, 5)
         csv_exporter.start()
         data = []
-        for i in range(0,5):
+        for i in range(0, 5):
             data.append(generateDictionaryData())
             csv_exporter.export(data[i], result_handler)
         csv_exporter.stop()
