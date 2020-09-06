@@ -5,8 +5,12 @@ import time
 import unittest
 
 
+def result_handler(*args):
+    pass
+
+
 class HTTPExporterTests(unittest.TestCase):
-    # TODO see if theres a setup before run test suite
+    # TODO see if there's a setup before run test suite
     def test_breathing(self):
         MockRequests.load_host("localhost")
         http_exporter = HTTPExporter("localhost", MockRequests)
@@ -19,7 +23,7 @@ class HTTPExporterTests(unittest.TestCase):
         MockRequests.load_host("localhost")
         http_exporter = HTTPExporter("localhost", MockRequests)
         http_exporter.start()
-        result = http_exporter.export("BigData", None)
+        result = http_exporter.export("BigData", result_handler)
         self.assertEqual(result, 0)
         http_exporter.stop()
 
@@ -42,7 +46,7 @@ class HTTPExporterTests(unittest.TestCase):
         http_exporter = HTTPExporter("bogusHost", MockRequests)
         result = http_exporter.start()
         self.assertEqual(result, 0)
-        http_exporter.export("BioData", None)
+        http_exporter.export("BioData", result_handler)
         time.sleep(3)
         self.assertEqual(MockRequests._last_response.status_code, 400)
         http_exporter.stop()

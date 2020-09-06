@@ -13,7 +13,7 @@ class PacketDecoder:
             PacketDecoder._instance = self
 
     @staticmethod
-    def getInstance():
+    def get_instance():
         if not PacketDecoder._instance:
             PacketDecoder()
         return PacketDecoder._instance
@@ -21,19 +21,19 @@ class PacketDecoder:
     def decode(self, header, data):
         (PS, PL, DID, VER, PN, CH, PT) = header
         if PT == 1:
-            return self.buildWaveObject(header, data)
+            return self.build_wave_object(header, data)
         elif PT == 2:
-            return self.buildNumericObject(header, data)
+            return self.build_numeric_object(header, data)
         elif PT == 3:
-            return self.buildEventObject(header, data)
+            return self.build_event_object(header, data)
         else:
-            return self.buildErrorObject()
+            return self.build_error_object()
 
-    def buildWaveObject(self, header, data):
+    def build_wave_object(self, header, data):
         # TODO: Implement wave object processing
         return {}
 
-    def buildNumericObject(self, header, data):
+    def build_numeric_object(self, header, data):
         (PS, PL, DID, VER, PN, CH, PT) = header
 
         (timeStamp, SR, vessel, depth, power, sample, flags, emboliCount,
@@ -49,10 +49,10 @@ class PacketDecoder:
 
         return formatted_packet
 
-    def buildEventObject(self, header, data):
+    def build_event_object(self, header, data):
         self._event_packet_unpacker = struct.Struct(str(len(data)) + 'c')
         return {
             'EventMessage:': ''.join(self._event_packet_unpacker.unpack(data))}
 
-    def buildErrorObject(self):
+    def build_error_object(self):
         return {'error': 'Something went wrong in the TCD machine.'}
