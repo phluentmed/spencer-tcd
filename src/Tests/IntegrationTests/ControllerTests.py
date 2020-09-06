@@ -1,4 +1,4 @@
-from controller import Controller
+from Components.Controller import Controller
 from Components.MockSerialConnection import MockSerialConnection
 import csv
 import time

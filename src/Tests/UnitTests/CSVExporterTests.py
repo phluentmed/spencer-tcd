@@ -15,7 +15,6 @@ def generateDictionaryData():
             'hex': ''.join(random.choice(hexdigits) for i in range(10)),
             'letters': ''.join(random.choice(letters) for i in range(10))}
 
-
 def result_handler(*args):
     pass
 
@@ -44,7 +43,7 @@ class CSVExporterTests(unittest.TestCase):
         csv_exporter = CSVExporter(test_file)
         result = csv_exporter.start()
         self.assertEqual(result, 0)
-        result = csv_exporter.stop()
+        result = csv_exporter.stop(result_handler)
         self.assertEqual(result, 0)
 
     def test_write_no_start(self):
@@ -52,7 +51,7 @@ class CSVExporterTests(unittest.TestCase):
         result = csv_exporter.export(generateDictionaryData(), result_handler)
         self.assertEqual(result, -1)
         csv_exporter.start()
-        csv_exporter.stop()
+        csv_exporter.stop(result_handler)
         result = csv_exporter.export(generateDictionaryData(), result_handler)
         self.assertEqual(result, -1)
 
@@ -61,7 +60,7 @@ class CSVExporterTests(unittest.TestCase):
         csv_exporter.start()
         data = generateDictionaryData()
         csv_exporter.export(data, result_handler)
-        csv_exporter.stop()
+        csv_exporter.stop(result_handler)
         with open(test_file, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             it = iter(reader)
@@ -75,7 +74,7 @@ class CSVExporterTests(unittest.TestCase):
         for i in range(0, 5):
             data.append(generateDictionaryData())
             csv_exporter.export(data[i], result_handler)
-        csv_exporter.stop()
+        csv_exporter.stop(result_handler)
         with open(test_file, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
@@ -93,7 +92,7 @@ class CSVExporterTests(unittest.TestCase):
             data.append(generateDictionaryData())
             csv_exporter.export(data[i], result_handler)
         self.assertFalse(os.path.isfile(test_file))
-        csv_exporter.stop()
+        csv_exporter.stop(result_handler)
         with open(test_file, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
@@ -110,7 +109,7 @@ class CSVExporterTests(unittest.TestCase):
         for i in range(0, 4):
             data.append(generateDictionaryData())
             csv_exporter.export(data[i], result_handler)
-        csv_exporter.stop()
+        csv_exporter.stop(result_handler)
         with open(test_file, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:

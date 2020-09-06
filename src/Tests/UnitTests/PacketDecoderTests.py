@@ -15,7 +15,7 @@ class TestPackets(unittest.TestCase):
                              'EmboliRate': 0}
 
     def test_numeric_packet(self):
-        packet_decoder = PacketDecoder.getInstance()
+        packet_decoder = PacketDecoder.get_instance()
         self.assertEqual(packet_decoder.decode(self.numeric_packet_header,
                                                self.numeric_packet_data),
                          self.numeric_packet_output)
