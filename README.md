@@ -6,6 +6,7 @@ ________________________________________________________________________________
 - [Features](#features)
 - [Usage](#usage)
 - [Examples](#examples)
+- [Tests](#examples)
 - [Contact](#contact)
 
 ________________________________________________________________________________________________________________________________________
@@ -28,12 +29,13 @@ Data is exported in two main flavours:
 Data can be exported into CSV format by running the script and specifying the file path
 along with the file name using the '-o' option. The default configuration is to save the 
 exported data in batches of 10 meaning the CSV file will be written to after the machine 
-has exported 10 times.
+has exported 10 times. See [Examples](#examples) for sample usage.
 
 #### HTTP
 Data can also be exported using HTTP requests by running the script and specifying the
 endpoint using the '-w' option. The script sends the data in JSON format via a PUT
-request every time data is received from the machine.<br>
+request every time data is received from the machine. See [Examples](#examples) for 
+sample usage.<br>
 **Warning:** With the HTTP option, the data isn't being encrypted while being sent over
 the network. It is recommended to only use this option on localhost. Error handling is
 not robust.
@@ -64,6 +66,16 @@ directory doesn't exist. <br>
 `python main.py -p /dev/ttyUSB0 -w localhost/data`<br>
 The script will sent exported data via HTTP to the endpoint 'localhost/data'. CSV 
 exporting is disabled. <br>
+
+## Tests and Contributions
+#### Testing
+There's a test suite available to verify any changes made to the code. If you extend
+the functionality in any way, you can run: <br>
+`python tests.py` <br>
+from the src directory to verify any changes made won't break the script.<br>
+####Contributions
+If there are any changes or features you think will make the script better, submit a 
+pull request and we'll take a look!
 
 ## Contact
 
