@@ -1,4 +1,4 @@
-# Spencer ST3 TCD Data Exporter
+# Spencer ST3 PMD150 TCD (Trans-Cranial Doppler) Data Exporter
 _______________________________________________________________________________________________________________________________________
 ## Table of Contents
 - [Overview](#overview)
@@ -11,9 +11,9 @@ ________________________________________________________________________________
 
 ________________________________________________________________________________________________________________________________________
 ## Overview
-This script exports data via USB serial from the Spencer ST3 Trans-Cranial Doppler
-machine and saves it in CSV format. The script is also capable sending the collected
-data to an endpoint using HTTP. Tested on python version > 3.7.x.
+This script exports data via USB serial from the Spencer ST3 PMD150 Trans-Cranial 
+Doppler machine and saves it in CSV format. The script is also capable sending the 
+collected data to an endpoint using HTTP. Tested on python version > 3.7.x.
 
 ## Installing Dependencies
 To install the project's dependencies, run: <br>
