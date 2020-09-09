@@ -73,7 +73,7 @@ There's a test suite available to verify any changes made to the code. If you ex
 the functionality in any way, you can run: <br>
 `python tests.py` <br>
 from the src directory to verify any changes made won't break the script.<br>
-####Contributions
+#### Contributions
 If there are any changes or features you think will make the script better, submit a 
 pull request and we'll take a look!
 
