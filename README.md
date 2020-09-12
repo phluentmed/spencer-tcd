@@ -12,7 +12,7 @@ ________________________________________________________________________________
 ________________________________________________________________________________________________________________________________________
 ## Overview
 This script exports data via USB serial from the Spencer ST3 PMD150 Trans-Cranial 
-Doppler machine and saves it in CSV format. The script is also capable sending the 
+Doppler machine and saves it in CSV format. The script is also capable of sending the 
 collected data to an endpoint using HTTP. Tested on python version > 3.7.x.
 
 ## Installing Dependencies
