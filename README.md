@@ -27,8 +27,8 @@ Data is exported in two main flavours:
 
 #### CSV Format
 Data can be exported into CSV format by running the script and specifying the file path
-along with the file name using the '-o' option. The default configuration is to save the 
-exported data in batches of 10 meaning the CSV file will be written to after the machine 
+along with the file name using the '-o' option. The default configuration saves the 
+exported data in batches of 10 datapoints, meaning the CSV file will be written to after the machine 
 has exported 10 times. See [Examples](#examples) for sample usage.
 
 #### HTTP
