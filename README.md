@@ -22,8 +22,8 @@ from the root directory of the project.
 
 ## Features
 This script only exports numeric data packets and currently doesn't support envelope
-wave data (if you would like this supported, either send us an email or open an issue).
-Data is exported in two main flavours:
+wave data (if you would like this to besupported, either send us an email or open an
+issue). Data is exported in two main flavours:
 
 #### CSV Format
 Data can be exported into CSV format by running the script and specifying the file path
