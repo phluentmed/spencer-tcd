@@ -84,3 +84,18 @@ code, have any questions, or even have some feature suggestions. If you're
 experiencing issues, please send the corresponding log file to help us diagnose
 the issue.
 
+<ins> Recommended Email format: </ins>
+
+Subject: SpencerTCD - [Issue]
+
+Steps to reproduce: (Please include code snippets or stack trace where possible)
+
+Device used:
+
+Platform:
+
+Actual result:
+
+Expected result:
+
+Comments:
