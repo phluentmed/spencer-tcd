@@ -1,3 +1,4 @@
+import sys
 import unittest
 
 unit_tests = unittest.TestLoader().discover('Tests/UnitTests', '*Tests.py')
