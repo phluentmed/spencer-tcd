@@ -15,6 +15,7 @@ def generateDictionaryData():
             'hex': ''.join(random.choice(hexdigits) for i in range(10)),
             'letters': ''.join(random.choice(letters) for i in range(10))}
 
+
 def result_handler(*args):
     pass
 
