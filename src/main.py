@@ -6,6 +6,7 @@ import shutil
 import signal
 from Components.Controller import Controller
 from Components.SerialConnection import SerialConnection
+from Components.MockSerialConnection import MockSerialConnection
 
 ### Get cmd line arguments from user ###
 
@@ -16,14 +17,15 @@ parser.add_argument('-o', '--out_file')
 # TODO: Add validation to make sure the suffix is .csv
 parser.add_argument('-w', '--web_out')
 parser.add_argument('-p', '--port', default='/dev/ttyUSB0')
+parser.add_argument('-m', '--mode', default='normal')
 
 args = parser.parse_args()
 
-if args.outfile == None and args.web_out == None:
+if args.out_file == None and args.web_out == None:
     print('specify at least one output destination')
     exit()
 
-arg_outfile = args.outfile
+arg_outfile = args.out_file
 arg_web_out = args.web_out
 arg_port = args.port
 
@@ -38,13 +40,21 @@ logging.basicConfig(filename=logging_dir + '/spencer_tcd' +
                              datetime.datetime.now().isoformat() + '.log',
                     level=logging.DEBUG,
                     format='%(levelname)s:%(message)s')
-controller = Controller(SerialConnection,
-                        arg_port,
-                        arg_outfile,
-                        arg_web_out)
+controller = None
+if args.mode == 'demo':
+    MockSerialConnection.is_demo = True
+    controller = Controller(MockSerialConnection,
+                            arg_port,
+                            arg_outfile,
+                            arg_web_out)
+else:
+    controller = Controller(SerialConnection,
+                            arg_port,
+                            arg_outfile,
+                            arg_web_out)
+
 
 ### functions to start and stop controller ###
-
 
 def start_controller():
     controller.start()
