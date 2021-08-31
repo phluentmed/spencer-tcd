@@ -7,6 +7,7 @@ from Components.PacketDecoder import PacketDecoder
 from Components.CSVExporter import CSVExporter
 from Components.HTTPExporter import HTTPExporter
 
+logger = logging.getLogger()
 
 class Controller():
 
@@ -16,9 +17,6 @@ class Controller():
         self._web_out = web_out
         self._is_running = False
         self._exporter_lst = []
-        logging.basicConfig(filename='spencer_tcd' +
-                                     datetime.datetime.now().isoformat() +
-                                     '.log')
         self._data_handler_thread = \
             threading.Thread(target=self._data_handler)
 
@@ -27,33 +25,33 @@ class Controller():
         return self._is_running
 
     def _handler_callback(self, level, message):
-        logging.log(level, message)
+        logger.log(level, message)
 
     def start(self):
         if not self.is_running:
             self._is_running = True
             self._data_handler_thread.start()
-            logging.info('Starting controller')
+            logger.info('Starting controller')
         return 0
 
     def stop(self):
-        logging.info('Stopping controller')
+        logger.info('Stopping controller')
         for exporter in self._exporter_lst:
             exporter.stop(self._handler_callback)
         self._is_running = False
         self._serial_connection.cancel_read()
         self._data_handler_thread.join()
-        logging.info('Controller stopped.')
+        logger.info('Controller stopped.')
         return 0
 
     def _data_handler(self):
         # establish connection
-        logging.info('TCD Connecting...')
+        logger.info('TCD Connecting...')
         result = self._serial_connection.connect()
         if result:
-            logging.info('TCD Connected')
+            logger.info('TCD Connected')
         else:
-            logging.error('TCD couldn\'t connect')
+            logger.error('TCD couldn\'t connect')
             # TODO: Handle when the TCD can't connect gracefully
         packet_decoder = PacketDecoder.get_instance()
 
@@ -71,7 +69,7 @@ class Controller():
 
             (PS, PL, DID, VER, PN, CH, PT) = header
             if not data and not header:
-                logging.error('TCD packet could not be correctly parsed')
+                logger.error('TCD packet could not be correctly parsed')
 
             # envelope packet
             if PT == 1:
@@ -87,8 +85,8 @@ class Controller():
             # messages packet
             elif PT == 3:
                 print("message packet")
-                logging.info('%s', packet_decoder.decode(header, data))
+                logger.info('%s', packet_decoder.decode(header, data))
 
             # error packet
             elif PT == 4:
-                logging.error('%s', packet_decoder.decode(header, data))
+                logger.error('%s', packet_decoder.decode(header, data))

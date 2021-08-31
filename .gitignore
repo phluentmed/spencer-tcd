@@ -5,3 +5,6 @@ __pycache__
 venv/
 *.log
 Logs
+.DS_Store
+build/
+dist/
