@@ -8,3 +8,4 @@ Logs
 .DS_Store
 build/
 dist/
+main.spec
