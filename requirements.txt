@@ -5,6 +5,6 @@ idna==2.10
 iso8601==0.1.12
 PyYAML==5.4
 requests==2.24.0
-serial==0.0.97
+pyserial==3.5
 timeout-decorator==0.4.1
 urllib3==1.25.10

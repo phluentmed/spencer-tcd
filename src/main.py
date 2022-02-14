@@ -4,9 +4,12 @@ import logging
 import os
 import shutil
 import signal
+import sys
+
 from Components.Controller import Controller
 from Components.SerialConnection import SerialConnection
 from Components.MockSerialConnection import MockSerialConnection
+from sys import exit
 
 ### Get cmd line arguments from user ###
 
@@ -36,10 +39,17 @@ if not os.path.isdir(logging_dir):
     except FileExistsError:
         print("Directory ", logging_dir, " already exists")
 
-logging.basicConfig(filename=logging_dir + '/spencer_tcd' +
-                             datetime.datetime.now().isoformat() + '.log',
-                    level=logging.DEBUG,
-                    format='%(levelname)s:%(message)s')
+# Initialize logger
+LOGGER_FILENAME = logging_dir + '/spencer_tcd' + datetime.datetime.now().isoformat() + '.log'
+LOGGER_LEVEL = logging.DEBUG
+LOGGER_FORMAT = '%(levelname)s:%(message)s'
+
+file_handler = logging.FileHandler(filename=LOGGER_FILENAME)
+stdout_handler = logging.StreamHandler(sys.stdout)
+handlers = [file_handler, stdout_handler]
+logging.basicConfig(handlers=handlers, level=LOGGER_LEVEL, format=LOGGER_FORMAT)
+
+
 controller = None
 if args.mode == 'demo':
     MockSerialConnection.is_demo = True
